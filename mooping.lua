@@ -1,4 +1,4 @@
--- MooPing Hub | Pink Theme Edition
+-- MooPing Hub
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
@@ -220,7 +220,7 @@ local FSTitle = Instance.new("TextLabel")
 FSTitle.Size = UDim2.new(1, -12, 0, 24)
 FSTitle.Position = UDim2.new(0, 10, 0, 6)
 FSTitle.BackgroundTransparency = 1
-FSTitle.Text = "📊 สถานะระบบ (ลากย้ายได้)"
+FSTitle.Text = "📊"
 FSTitle.TextColor3 = Color3.fromRGB(220, 220, 240)
 FSTitle.TextSize = 11
 FSTitle.Font = Enum.Font.GothamBold
