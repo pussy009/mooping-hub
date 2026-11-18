@@ -1,4 +1,4 @@
--- MooPing Hub | Full
+-- MooPing Hub | Perfect Scroll & Profile Edition
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
@@ -288,7 +288,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -20, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "🍖 MooPing Hub | Ultimate Edition"
+Title.Text = "🍖 MooPing Hub | Scroll Edition"
 Title.TextColor3 = Color3.fromRGB(245, 245, 250)
 Title.TextSize = 14
 Title.Font = Enum.Font.GothamBold
@@ -319,7 +319,6 @@ local function createTabButton(posX, sizeX, text)
     return btn
 end
 
--- 4 แท็บหลักที่จัดหมวดหมู่อย่างเหมาะสม
 local Tab1Button = createTabButton(0.00, 0.23, "🔥 ฟาร์ม")
 local Tab2Button = createTabButton(0.25, 0.23, "📍 วาร์ป")
 local Tab3Button = createTabButton(0.50, 0.23, "⚡ ผู้เล่น")
@@ -349,11 +348,14 @@ PlayerContainer.BackgroundTransparency = 1
 PlayerContainer.Visible = false
 PlayerContainer.Parent = MainFrame
 
-local SettingsContainer = Instance.new("Frame")
+-- [ แท็บตั้งค่า ทำเป็น ScrollingFrame ให้เลื่อนลงได้ ]
+local SettingsContainer = Instance.new("ScrollingFrame")
 SettingsContainer.Size = UDim2.new(1, 0, 0.82, 0)
 SettingsContainer.Position = UDim2.new(0, 0, 0.17, 0)
 SettingsContainer.BackgroundTransparency = 1
 SettingsContainer.Visible = false
+SettingsContainer.CanvasSize = UDim2.new(0, 0, 0, 460)
+SettingsContainer.ScrollBarThickness = 4
 SettingsContainer.Parent = MainFrame
 
 local StatusBadge = Instance.new("Frame")
@@ -511,13 +513,11 @@ local CTPCorner = Instance.new("UICorner")
 CTPCorner.CornerRadius = UDim.new(0, 8)
 CTPCorner.Parent = ClearTPButton
 
-local currentSaveIndex = 0
-
 SaveTPButton.MouseButton1Click:Connect(function()
     local char = LocalPlayer.Character
     local rootPart = char and char:FindFirstChild("HumanoidRootPart")
     if rootPart then
-        currentSaveIndex = currentSaveIndex + 1
+        currentSaveIndex = (currentSaveIndex or 0) + 1
         if currentSaveIndex > 4 then currentSaveIndex = 1 end
         
         savedCheckpoints[currentSaveIndex] = rootPart.CFrame
@@ -662,13 +662,13 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- [ แท็บ 4: ตั้งค่า (รวมปุ่ม Clear Script ปิดสคริปต์ทิ้งแบบถาวร) ]
+-- [ แท็บ 4: ตั้งค่า (ขยายขนาดรูปโปรไฟล์ และจัดฟังก์ชันให้ใหญ่ขึ้น พร้อมช่องเลื่อน) ]
 local isAntiAFKEnabled = true
 local isFloatingStatsVisible = true
 
 local ProfileCard = Instance.new("Frame")
-ProfileCard.Size = UDim2.new(0.88, 0, 0, 52)
-ProfileCard.Position = UDim2.new(0.06, 0, 0.02, 0)
+ProfileCard.Size = UDim2.new(0.92, 0, 0, 70)
+ProfileCard.Position = UDim2.new(0.04, 0, 0, 10)
 ProfileCard.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
 ProfileCard.BorderSizePixel = 0
 ProfileCard.Parent = SettingsContainer
@@ -678,8 +678,8 @@ PCarCorner.CornerRadius = UDim.new(0, 10)
 PCarCorner.Parent = ProfileCard
 
 local AvatarImg = Instance.new("ImageLabel")
-AvatarImg.Size = UDim2.new(0, 38, 0, 38)
-AvatarImg.Position = UDim2.new(0, 8, 0.5, -19)
+AvatarImg.Size = UDim2.new(0, 52, 0, 52)
+AvatarImg.Position = UDim2.new(0, 10, 0.5, -26)
 AvatarImg.BackgroundTransparency = 1
 pcall(function()
     local content = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
@@ -692,35 +692,35 @@ AvatarCorner.CornerRadius = UDim.new(1, 0)
 AvatarCorner.Parent = AvatarImg
 
 local NameLabel = Instance.new("TextLabel")
-NameLabel.Size = UDim2.new(1, -50, 0, 18)
-NameLabel.Position = UDim2.new(0, 52, 0, 9)
+NameLabel.Size = UDim2.new(1, -70, 0, 22)
+NameLabel.Position = UDim2.new(0, 70, 0, 14)
 NameLabel.BackgroundTransparency = 1
 NameLabel.Text = LocalPlayer.Name
 NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-NameLabel.TextSize = 11
+NameLabel.TextSize = 13
 NameLabel.Font = Enum.Font.GothamBold
 NameLabel.TextXAlignment = Enum.TextXAlignment.Left
 NameLabel.Parent = ProfileCard
 
 local SubNameLabel = Instance.new("TextLabel")
-SubNameLabel.Size = UDim2.new(1, -50, 0, 16)
-SubNameLabel.Position = UDim2.new(0, 52, 0, 26)
+SubNameLabel.Size = UDim2.new(1, -70, 0, 18)
+SubNameLabel.Position = UDim2.new(0, 70, 0, 36)
 SubNameLabel.BackgroundTransparency = 1
 SubNameLabel.Text = "✨ สถานะ: ออนไลน์"
 SubNameLabel.TextColor3 = Color3.fromRGB(120, 220, 120)
-SubNameLabel.TextSize = 10
+SubNameLabel.TextSize = 11
 SubNameLabel.Font = Enum.Font.Gotham
 SubNameLabel.TextXAlignment = Enum.TextXAlignment.Left
 SubNameLabel.Parent = ProfileCard
 
 local function createSettingsButton(posY, text, defaultColor)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.88, 0, 0, 28)
-    btn.Position = UDim2.new(0.06, 0, posY, 0)
+    btn.Size = UDim2.new(0.92, 0, 0, 38)
+    btn.Position = UDim2.new(0.04, 0, 0, posY)
     btn.BackgroundColor3 = defaultColor
     btn.Text = text
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextSize = 11
+    btn.TextSize = 12
     btn.Font = Enum.Font.GothamBold
     btn.Parent = SettingsContainer
 
@@ -730,24 +730,24 @@ local function createSettingsButton(posY, text, defaultColor)
     return btn
 end
 
-local AntiAFKButton = createSettingsButton(0.13, "🛡️  Anti-AFK [ เปิดใช้งาน ]", Color3.fromRGB(40, 180, 90))
-local ToggleStatsButton = createSettingsButton(0.20, "👁️  แสดงหน้าต่างสถิติ [ เปิดอยู่ ]", Color3.fromRGB(40, 150, 90))
+local AntiAFKButton = createSettingsButton(95, "🛡️  Anti-AFK [ เปิดใช้งาน ]", Color3.fromRGB(40, 180, 90))
+local ToggleStatsButton = createSettingsButton(140, "👁️  แสดงหน้าต่างสถิติ [ เปิดอยู่ ]", Color3.fromRGB(40, 150, 90))
 
 -- 🎨 ระบบเลือกสีธีมสำเร็จรูป
 local ThemeLabel = Instance.new("TextLabel")
-ThemeLabel.Size = UDim2.new(0.88, 0, 0, 16)
-ThemeLabel.Position = UDim2.new(0.06, 0, 0.28, 0)
+ThemeLabel.Size = UDim2.new(0.92, 0, 0, 20)
+ThemeLabel.Position = UDim2.new(0.04, 0, 0, 185)
 ThemeLabel.BackgroundTransparency = 1
 ThemeLabel.Text = "🎨 เลือกสีธีมฮับ:"
 ThemeLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
-ThemeLabel.TextSize = 10
+ThemeLabel.TextSize = 12
 ThemeLabel.Font = Enum.Font.GothamBold
 ThemeLabel.TextXAlignment = Enum.TextXAlignment.Left
 ThemeLabel.Parent = SettingsContainer
 
 local ThemeColorsFrame = Instance.new("Frame")
-ThemeColorsFrame.Size = UDim2.new(0.88, 0, 0, 26)
-ThemeColorsFrame.Position = UDim2.new(0.06, 0, 0.32, 0)
+ThemeColorsFrame.Size = UDim2.new(0.92, 0, 0, 32)
+ThemeColorsFrame.Position = UDim2.new(0.04, 0, 0, 210)
 ThemeColorsFrame.BackgroundTransparency = 1
 ThemeColorsFrame.Parent = SettingsContainer
 
@@ -781,13 +781,13 @@ for i, col in ipairs(colorsList) do
     end)
 end
 
-local InfiniteYieldButton = createSettingsButton(0.41, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
-local ServerHopButton = createSettingsButton(0.48, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
-local RejoinButton = createSettingsButton(0.55, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
-local SaveConfigButton = createSettingsButton(0.62, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
+local InfiniteYieldButton = createSettingsButton(255, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
+local ServerHopButton = createSettingsButton(300, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
+local RejoinButton = createSettingsButton(345, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
+local SaveConfigButton = createSettingsButton(390, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
 
--- 🛑 เพิ่มปุ่ม Kill Switch / Clear Script (ปิดสคริปต์และล้างทิ้งทันที)
-local ClearScriptButton = createSettingsButton(0.71, "🛑  เคลียร์และปิดสคริปต์ทั้งหมด (END)", Color3.fromRGB(220, 40, 40))
+-- 🛑 ปุ่ม Kill Switch / Clear Script (ปิดสคริปต์และล้างทิ้งทันที)
+local ClearScriptButton = createSettingsButton(435, "🛑  เคลียร์และปิดสคริปต์ทั้งหมด (END)", Color3.fromRGB(220, 40, 40))
 
 ClearScriptButton.MouseButton1Click:Connect(function()
     showNotification("ปิดสคริปต์", "กำลังยุติการทำงานและทำลาย GUI ทิ้ง...", "error")
@@ -1123,4 +1123,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("โหลด UI Ultimate Structured Edition สำเร็จ!")
+print("โหลด UI Scroll Edition สำเร็จ!")
