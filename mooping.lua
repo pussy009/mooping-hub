@@ -1,4 +1,4 @@
--- MooPing Hub | Perfect Scroll & Profile Edition
+-- MooPing Hub | Final Fixed Edition
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
@@ -288,7 +288,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -20, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "🍖 MooPing Hub | Scroll Edition"
+Title.Text = "🍖 MooPing Hub | Final Edition"
 Title.TextColor3 = Color3.fromRGB(245, 245, 250)
 Title.TextSize = 14
 Title.Font = Enum.Font.GothamBold
@@ -348,13 +348,13 @@ PlayerContainer.BackgroundTransparency = 1
 PlayerContainer.Visible = false
 PlayerContainer.Parent = MainFrame
 
--- [ แท็บตั้งค่า ทำเป็น ScrollingFrame ให้เลื่อนลงได้ ]
+-- [ แท็บตั้งค่า: ขยาย CanvasSize เป็น 520 เพื่อให้เลื่อนพ้นปุ่ม END ด้านล่างสุด ]
 local SettingsContainer = Instance.new("ScrollingFrame")
 SettingsContainer.Size = UDim2.new(1, 0, 0.82, 0)
 SettingsContainer.Position = UDim2.new(0, 0, 0.17, 0)
 SettingsContainer.BackgroundTransparency = 1
 SettingsContainer.Visible = false
-SettingsContainer.CanvasSize = UDim2.new(0, 0, 0, 460)
+SettingsContainer.CanvasSize = UDim2.new(0, 0, 0, 520)
 SettingsContainer.ScrollBarThickness = 4
 SettingsContainer.Parent = MainFrame
 
@@ -662,7 +662,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- [ แท็บ 4: ตั้งค่า (ขยายขนาดรูปโปรไฟล์ และจัดฟังก์ชันให้ใหญ่ขึ้น พร้อมช่องเลื่อน) ]
+-- [ แท็บ 4: ตั้งค่า ]
 local isAntiAFKEnabled = true
 local isFloatingStatsVisible = true
 
@@ -730,13 +730,13 @@ local function createSettingsButton(posY, text, defaultColor)
     return btn
 end
 
-local AntiAFKButton = createSettingsButton(95, "🛡️  Anti-AFK [ เปิดใช้งาน ]", Color3.fromRGB(40, 180, 90))
-local ToggleStatsButton = createSettingsButton(140, "👁️  แสดงหน้าต่างสถิติ [ เปิดอยู่ ]", Color3.fromRGB(40, 150, 90))
+local AntiAFKButton = createSettingsButton(90, "🛡️  Anti-AFK [ เปิดใช้งาน ]", Color3.fromRGB(40, 180, 90))
+local ToggleStatsButton = createSettingsButton(134, "👁️  แสดงหน้าต่างสถิติ [ เปิดอยู่ ]", Color3.fromRGB(40, 150, 90))
 
 -- 🎨 ระบบเลือกสีธีมสำเร็จรูป
 local ThemeLabel = Instance.new("TextLabel")
 ThemeLabel.Size = UDim2.new(0.92, 0, 0, 20)
-ThemeLabel.Position = UDim2.new(0.04, 0, 0, 185)
+ThemeLabel.Position = UDim2.new(0.04, 0, 0, 178)
 ThemeLabel.BackgroundTransparency = 1
 ThemeLabel.Text = "🎨 เลือกสีธีมฮับ:"
 ThemeLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
@@ -747,7 +747,7 @@ ThemeLabel.Parent = SettingsContainer
 
 local ThemeColorsFrame = Instance.new("Frame")
 ThemeColorsFrame.Size = UDim2.new(0.92, 0, 0, 32)
-ThemeColorsFrame.Position = UDim2.new(0.04, 0, 0, 210)
+ThemeColorsFrame.Position = UDim2.new(0.04, 0, 0, 202)
 ThemeColorsFrame.BackgroundTransparency = 1
 ThemeColorsFrame.Parent = SettingsContainer
 
@@ -776,18 +776,20 @@ for i, col in ipairs(colorsList) do
     cBtn.MouseButton1Click:Connect(function()
         customAccentColor = {R = col.R, G = col.G, B = col.B}
         activeAccentColor3 = Color3.fromRGB(col.R, col.G, col.B)
-        PlaceButton.BackgroundColor3 = activeAccentColor3
+        if not isPlacing then
+            PlaceButton.BackgroundColor3 = activeAccentColor3
+        end
         showNotification("เปลี่ยนสีธีม", "เปลี่ยนเป็นธีม " .. col.Name .. " สำเร็จ!", "success")
     end)
 end
 
-local InfiniteYieldButton = createSettingsButton(255, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
-local ServerHopButton = createSettingsButton(300, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
-local RejoinButton = createSettingsButton(345, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
-local SaveConfigButton = createSettingsButton(390, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
+local InfiniteYieldButton = createSettingsButton(246, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
+local ServerHopButton = createSettingsButton(290, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
+local RejoinButton = createSettingsButton(334, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
+local SaveConfigButton = createSettingsButton(378, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
 
 -- 🛑 ปุ่ม Kill Switch / Clear Script (ปิดสคริปต์และล้างทิ้งทันที)
-local ClearScriptButton = createSettingsButton(435, "🛑  เคลียร์และปิดสคริปต์ทั้งหมด (END)", Color3.fromRGB(220, 40, 40))
+local ClearScriptButton = createSettingsButton(422, "🛑  เคลียร์และปิดสคริปต์ทั้งหมด (END)", Color3.fromRGB(220, 40, 40))
 
 ClearScriptButton.MouseButton1Click:Connect(function()
     showNotification("ปิดสคริปต์", "กำลังยุติการทำงานและทำลาย GUI ทิ้ง...", "error")
@@ -1123,4 +1125,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("โหลด UI Scroll Edition สำเร็จ!")
+print("โหลด UI Final Edition สำเร็จ!")
