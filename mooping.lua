@@ -1,4 +1,4 @@
--- MooPing Hub | Custom Color & Noclip Edition
+-- MooPing Hub | Preset Color Theme Edition
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
@@ -288,7 +288,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -20, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "🍖 MooPing Hub | Custom Edition"
+Title.Text = "🍖 MooPing Hub | Preset Color Edition"
 Title.TextColor3 = Color3.fromRGB(245, 245, 250)
 Title.TextSize = 14
 Title.Font = Enum.Font.GothamBold
@@ -757,40 +757,59 @@ FPSBox.FocusLost:Connect(function()
     end
 end)
 
-local ColorPickerBox = Instance.new("TextBox")
-ColorPickerBox.Size = UDim2.new(0.88, 0, 0, 26)
-ColorPickerBox.Position = UDim2.new(0.06, 0, 0.42, 0)
-ColorPickerBox.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
-ColorPickerBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-ColorPickerBox.PlaceholderText = "ใส่ค่าสี RGB เช่น 220,105,30"
-ColorPickerBox.Text = customAccentColor.R .. "," .. customAccentColor.G .. "," .. customAccentColor.B
-ColorPickerBox.TextSize = 10
-ColorPickerBox.Font = Enum.Font.GothamMedium
-ColorPickerBox.Parent = ExtraContainer
+-- 🎨 ระบบเลือกสีธีมสำเร็จรูป (Preset Color Palette)
+local ThemeLabel = Instance.new("TextLabel")
+ThemeLabel.Size = UDim2.new(0.88, 0, 0, 18)
+ThemeLabel.Position = UDim2.new(0.06, 0, 0.41, 0)
+ThemeLabel.BackgroundTransparency = 1
+ThemeLabel.Text = "🎨 เลือกสีธีมฮับ:"
+ThemeLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
+ThemeLabel.TextSize = 10
+ThemeLabel.Font = Enum.Font.GothamBold
+ThemeLabel.TextXAlignment = Enum.TextXAlignment.Left
+ThemeLabel.Parent = ExtraContainer
 
-local CPCorner = Instance.new("UICorner")
-CPCorner.CornerRadius = UDim.new(0, 8)
-CPCorner.Parent = ColorPickerBox
+local ThemeColorsFrame = Instance.new("Frame")
+ThemeColorsFrame.Size = UDim2.new(0.88, 0, 0, 26)
+ThemeColorsFrame.Position = UDim2.new(0.06, 0, 0.45, 0)
+ThemeColorsFrame.BackgroundTransparency = 1
+ThemeColorsFrame.Parent = ExtraContainer
 
-ColorPickerBox.FocusLost:Connect(function()
-    local r, g, b = ColorPickerBox.Text:match("(%d+)%s*,%s*(%d+)%s*,%s*(%d+)")
-    r, g, b = tonumber(r), tonumber(g), tonumber(b)
-    if r and g and b and r <= 255 and g <= 255 and b <= 255 then
-        customAccentColor = {R = r, G = g, B = b}
-        activeAccentColor3 = Color3.fromRGB(r, g, b)
+local colorsList = {
+    {Name = "ส้มหมูปิ้ง", R = 220, G = 105, B = 30},
+    {Name = "ฟ้า", R = 40, G = 120, B = 200},
+    {Name = "เขียว", R = 40, G = 160, B = 90},
+    {Name = "ชมพู", R = 200, G = 60, B = 140},
+    {Name = "ม่วง", R = 130, G = 50, B = 180},
+    {Name = "แดง", R = 200, G = 50, B = 50}
+}
+
+local btnWidth = 1 / #colorsList
+for i, col in ipairs(colorsList) do
+    local cBtn = Instance.new("TextButton")
+    cBtn.Size = UDim2.new(btnWidth - 0.02, 0, 1, 0)
+    cBtn.Position = UDim2.new((i - 1) * btnWidth, 0, 0, 0)
+    cBtn.BackgroundColor3 = Color3.fromRGB(col.R, col.G, col.B)
+    cBtn.Text = ""
+    cBtn.Parent = ThemeColorsFrame
+
+    local cCorner = Instance.new("UICorner")
+    cCorner.CornerRadius = UDim.new(0, 6)
+    cCorner.Parent = cBtn
+
+    cBtn.MouseButton1Click:Connect(function()
+        customAccentColor = {R = col.R, G = col.G, B = col.B}
+        activeAccentColor3 = Color3.fromRGB(col.R, col.G, col.B)
         PlaceButton.BackgroundColor3 = activeAccentColor3
-        showNotification("เปลี่ยนสีธีม", "อัปเดตสีไฮไลต์สำเร็จ!", "success")
-    else
-        showNotification("ข้อผิดพลาด", "รูปแบบสีไม่ถูกต้อง (ใช้ R,G,B เช่น 220,105,30)", "error")
-        ColorPickerBox.Text = customAccentColor.R .. "," .. customAccentColor.G .. "," .. customAccentColor.B
-    end
-end)
+        showNotification("เปลี่ยนสีธีม", "เปลี่ยนเป็นธีม " .. col.Name .. " สำเร็จ!", "success")
+    end)
+end
 
-local InfiniteYieldButton = createExtraButton(0.50, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
-local ServerHopButton = createExtraButton(0.56, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
-local RejoinButton = createExtraButton(0.62, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
-local SaveConfigButton = createExtraButton(0.68, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
-local FPSBoostButton = createExtraButton(0.74, "🚀  FPS Boost / ลดกราฟิก [ ปิดอยู่ ]", Color3.fromRGB(70, 90, 180))
+local InfiniteYieldButton = createExtraButton(0.51, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
+local ServerHopButton = createExtraButton(0.57, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
+local RejoinButton = createExtraButton(0.63, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
+local SaveConfigButton = createExtraButton(0.69, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
+local FPSBoostButton = createExtraButton(0.75, "🚀  FPS Boost / ลดกราฟิก [ ปิดอยู่ ]", Color3.fromRGB(70, 90, 180))
 
 AntiAFKButton.MouseButton1Click:Connect(function()
     isAntiAFKEnabled = not isAntiAFKEnabled
@@ -1177,4 +1196,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("โหลด UI Custom Edition สำเร็จ!")
+print("โหลด UI Preset Color Edition สำเร็จ!")
