@@ -1,4 +1,4 @@
--- MooPing Hub | FPS Cap Fix Edition
+-- MooPing Hub | Custom Color & Noclip Edition
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
@@ -33,15 +33,7 @@ local customSpeed = 30
 local targetFpsCap = 60
 local savedSpeedState = false
 local uiToggleKey = Enum.KeyCode.LeftControl
-local currentThemeName = "ส้มหมูปิ้ง"
-
--- 🎨 ธีมสีต่างๆ ของ UI
-local Themes = {
-    ["ส้มหมูปิ้ง"] = {Main = Color3.fromRGB(18, 18, 24), Header = Color3.fromRGB(25, 25, 35), Accent = Color3.fromRGB(220, 105, 30)},
-    ["เขียวมรกต"] = {Main = Color3.fromRGB(15, 24, 20), Header = Color3.fromRGB(20, 35, 28), Accent = Color3.fromRGB(40, 180, 90)},
-    ["ม่วงนีออน"] = {Main = Color3.fromRGB(22, 18, 28), Header = Color3.fromRGB(32, 25, 42), Accent = Color3.fromRGB(160, 50, 220)},
-    ["ฟ้าไซเบอร์"] = {Main = Color3.fromRGB(15, 22, 30), Header = Color3.fromRGB(22, 32, 45), Accent = Color3.fromRGB(40, 140, 220)}
-}
+local customAccentColor = {R = 220, G = 105, B = 30} -- สีส้มเริ่มต้น
 
 -- ฟังก์ชันแปลง CFrame เป็น Table
 local function cframeToTable(cf)
@@ -64,7 +56,7 @@ if readfile and pcall(readfile, CONFIG_FILE) then
             if data.speed then customSpeed = data.speed end
             if data.fpsCap then targetFpsCap = data.fpsCap end
             if data.speedState ~= nil then savedSpeedState = data.speedState end
-            if data.themeName and Themes[data.themeName] then currentThemeName = data.themeName end
+            if data.accentColor then customAccentColor = data.accentColor end
             if data.toggleKey and Enum.KeyCode[data.toggleKey] then 
                 uiToggleKey = Enum.KeyCode[data.toggleKey] 
             end
@@ -79,6 +71,8 @@ if readfile and pcall(readfile, CONFIG_FILE) then
         end
     end)
 end
+
+local activeAccentColor3 = Color3.fromRGB(customAccentColor.R, customAccentColor.G, customAccentColor.B)
 
 -- ฟังก์ชันค้นหา Plot อัตโนมัติ
 local function getMyPlot()
@@ -267,7 +261,7 @@ local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 340, 0, 600)
 MainFrame.Position = UDim2.new(0.5, -170, 0.4, -300)
-MainFrame.BackgroundColor3 = Themes[currentThemeName].Main
+MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
@@ -284,7 +278,7 @@ MainStroke.Parent = MainFrame
 
 local Header = Instance.new("Frame")
 Header.Size = UDim2.new(1, 0, 0, 48)
-Header.BackgroundColor3 = Themes[currentThemeName].Header
+Header.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 Header.BorderSizePixel = 0
 Header.Parent = MainFrame
 
@@ -295,7 +289,7 @@ HeaderCorner.Parent = Header
 local HeaderCover = Instance.new("Frame")
 HeaderCover.Size = UDim2.new(1, 0, 0, 12)
 HeaderCover.Position = UDim2.new(0, 0, 1, -12)
-HeaderCover.BackgroundColor3 = Themes[currentThemeName].Header
+HeaderCover.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 HeaderCover.BorderSizePixel = 0
 HeaderCover.Parent = Header
 
@@ -303,7 +297,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -20, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "🍖 MooPing Hub | FPS Safe Edition"
+Title.Text = "🍖 MooPing Hub | Custom Edition"
 Title.TextColor3 = Color3.fromRGB(245, 245, 250)
 Title.TextSize = 14
 Title.Font = Enum.Font.GothamBold
@@ -400,20 +394,22 @@ local isPlacing = false
 local isCollecting = false
 local isSpeedEnabled = savedSpeedState
 local isClickTPEnabled = false
+local isNoclipEnabled = false
 
-local COLOR_OFF_PLACE = Color3.fromRGB(220, 105, 30)
+local COLOR_OFF_PLACE = activeAccentColor3
 local COLOR_OFF_COLLECT = Color3.fromRGB(35, 130, 85)
 local COLOR_OFF_SPEED = Color3.fromRGB(70, 90, 180)
 local COLOR_OFF_TP = Color3.fromRGB(140, 50, 160)
+local COLOR_OFF_NOCLIP = Color3.fromRGB(100, 100, 130)
 local COLOR_ON = Color3.fromRGB(40, 180, 90)
 
 local PlaceButton = Instance.new("TextButton")
-PlaceButton.Size = UDim2.new(0.88, 0, 0, 36)
-PlaceButton.Position = UDim2.new(0.06, 0, 0.14, 0)
+PlaceButton.Size = UDim2.new(0.88, 0, 0, 34)
+PlaceButton.Position = UDim2.new(0.06, 0, 0.12, 0)
 PlaceButton.BackgroundColor3 = COLOR_OFF_PLACE
 PlaceButton.Text = "🔥  เริ่มปิ้งหมู  [ ปิดอยู่ ]"
 PlaceButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-PlaceButton.TextSize = 13
+PlaceButton.TextSize = 12
 PlaceButton.Font = Enum.Font.GothamBold
 PlaceButton.Parent = GeneralContainer
 
@@ -422,12 +418,12 @@ BtnCorner1.CornerRadius = UDim.new(0, 8)
 BtnCorner1.Parent = PlaceButton
 
 local CollectButton = Instance.new("TextButton")
-CollectButton.Size = UDim2.new(0.88, 0, 0, 36)
-CollectButton.Position = UDim2.new(0.06, 0, 0.30, 0)
+CollectButton.Size = UDim2.new(0.88, 0, 0, 34)
+CollectButton.Position = UDim2.new(0.06, 0, 0.26, 0)
 CollectButton.BackgroundColor3 = COLOR_OFF_COLLECT
 CollectButton.Text = "📦  เก็บหมูปิ้ง  [ ปิดอยู่ ]"
 CollectButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CollectButton.TextSize = 13
+CollectButton.TextSize = 12
 CollectButton.Font = Enum.Font.GothamBold
 CollectButton.Parent = GeneralContainer
 
@@ -436,12 +432,12 @@ BtnCorner2.CornerRadius = UDim.new(0, 8)
 BtnCorner2.Parent = CollectButton
 
 local SpeedButton = Instance.new("TextButton")
-SpeedButton.Size = UDim2.new(0.88, 0, 0, 36)
-SpeedButton.Position = UDim2.new(0.06, 0, 0.46, 0)
+SpeedButton.Size = UDim2.new(0.88, 0, 0, 34)
+SpeedButton.Position = UDim2.new(0.06, 0, 0.40, 0)
 SpeedButton.BackgroundColor3 = isSpeedEnabled and COLOR_ON or COLOR_OFF_SPEED
 SpeedButton.Text = "⚡  วิ่งไว: " .. customSpeed .. "  [ " .. (isSpeedEnabled and "เปิดใช้งาน" or "ปิดอยู่") .. " ]"
 SpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedButton.TextSize = 13
+SpeedButton.TextSize = 12
 SpeedButton.Font = Enum.Font.GothamBold
 SpeedButton.Parent = GeneralContainer
 
@@ -450,13 +446,13 @@ BtnCorner3.CornerRadius = UDim.new(0, 8)
 BtnCorner3.Parent = SpeedButton
 
 local SpeedBox = Instance.new("TextBox")
-SpeedBox.Size = UDim2.new(0.88, 0, 0, 30)
-SpeedBox.Position = UDim2.new(0.06, 0, 0.62, 0)
+SpeedBox.Size = UDim2.new(0.88, 0, 0, 28)
+SpeedBox.Position = UDim2.new(0.06, 0, 0.54, 0)
 SpeedBox.BackgroundColor3 = Color3.fromRGB(28, 28, 40)
 SpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedBox.PlaceholderText = "ใส่ความเร็ว (เช่น 35, 50)"
 SpeedBox.Text = tostring(customSpeed)
-SpeedBox.TextSize = 12
+SpeedBox.TextSize = 11
 SpeedBox.Font = Enum.Font.GothamMedium
 SpeedBox.Parent = GeneralContainer
 
@@ -480,18 +476,60 @@ SpeedBox.FocusLost:Connect(function()
 end)
 
 local TPButton = Instance.new("TextButton")
-TPButton.Size = UDim2.new(0.88, 0, 0, 36)
-TPButton.Position = UDim2.new(0.06, 0, 0.77, 0)
+TPButton.Size = UDim2.new(0.88, 0, 0, 34)
+TPButton.Position = UDim2.new(0.06, 0, 0.67, 0)
 TPButton.BackgroundColor3 = COLOR_OFF_TP
 TPButton.Text = "📍  คลิกวาร์ป (Ctrl + คลิก)  [ ปิดอยู่ ]"
 TPButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TPButton.TextSize = 13
+TPButton.TextSize = 12
 TPButton.Font = Enum.Font.GothamBold
 TPButton.Parent = GeneralContainer
 
 local BtnCorner4 = Instance.new("UICorner")
 BtnCorner4.CornerRadius = UDim.new(0, 8)
 BtnCorner4.Parent = TPButton
+
+local NoclipButton = Instance.new("TextButton")
+NoclipButton.Size = UDim2.new(0.88, 0, 0, 34)
+NoclipButton.Position = UDim2.new(0.06, 0, 0.81, 0)
+NoclipButton.BackgroundColor3 = COLOR_OFF_NOCLIP
+NoclipButton.Text = "🧱  ระบบทะลุกำแพง (Noclip) [ ปิดอยู่ ]"
+NoclipButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+NoclipButton.TextSize = 12
+NoclipButton.Font = Enum.Font.GothamBold
+NoclipButton.Parent = GeneralContainer
+
+local BtnCorner5 = Instance.new("UICorner")
+BtnCorner5.CornerRadius = UDim.new(0, 8)
+BtnCorner5.Parent = NoclipButton
+
+NoclipButton.MouseButton1Click:Connect(function()
+    isNoclipEnabled = not isNoclipEnabled
+    if isNoclipEnabled then
+        NoclipButton.Text = "🧱  ระบบทะลุกำแพง (Noclip) [ เปิดใช้งาน ]"
+        NoclipButton.BackgroundColor3 = COLOR_ON
+        showNotification("เปิดใช้งาน", "เปิดระบบทะลุกำแพงแล้ว", "success")
+    else
+        NoclipButton.Text = "🧱  ระบบทะลุกำแพง (Noclip) [ ปิดอยู่ ]"
+        NoclipButton.BackgroundColor3 = COLOR_OFF_NOCLIP
+        showNotification("ปิดใช้งาน", "ปิดระบบทะลุกำแพงแล้ว", "error")
+    end
+end)
+
+RunService.Stepped:Connect(function()
+    if isNoclipEnabled then
+        pcall(function()
+            local char = LocalPlayer.Character
+            if char then
+                for _, part in ipairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    end
+end)
 
 -- ==================== หมวดหมู่ที่ 2: วาร์ป (Teleport) ====================
 local bindingIndex = nil
@@ -634,7 +672,7 @@ local isBindingUIKey = false
 
 -- 👤 การ์ดโปรไฟล์
 local ProfileCard = Instance.new("Frame")
-ProfileCard.Size = UDim2.new(0.88, 0, 0, 65)
+ProfileCard.Size = UDim2.new(0.88, 0, 0, 60)
 ProfileCard.Position = UDim2.new(0.06, 0, 0.01, 0)
 ProfileCard.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
 ProfileCard.BorderSizePixel = 0
@@ -645,8 +683,8 @@ PCarCorner.CornerRadius = UDim.new(0, 10)
 PCarCorner.Parent = ProfileCard
 
 local AvatarImg = Instance.new("ImageLabel")
-AvatarImg.Size = UDim2.new(0, 48, 0, 48)
-AvatarImg.Position = UDim2.new(0, 8, 0.5, -24)
+AvatarImg.Size = UDim2.new(0, 44, 0, 44)
+AvatarImg.Position = UDim2.new(0, 8, 0.5, -22)
 AvatarImg.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
 pcall(function()
     AvatarImg.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
@@ -658,19 +696,19 @@ AvatarCorner.CornerRadius = UDim.new(1, 0)
 AvatarCorner.Parent = AvatarImg
 
 local NameLabel = Instance.new("TextLabel")
-NameLabel.Size = UDim2.new(1, -65, 0, 20)
-NameLabel.Position = UDim2.new(0, 62, 0, 12)
+NameLabel.Size = UDim2.new(1, -60, 0, 18)
+NameLabel.Position = UDim2.new(0, 58, 0, 11)
 NameLabel.BackgroundTransparency = 1
 NameLabel.Text = LocalPlayer.Name
 NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-NameLabel.TextSize = 12
+NameLabel.TextSize: 11
 NameLabel.Font = Enum.Font.GothamBold
 NameLabel.TextXAlignment = Enum.TextXAlignment.Left
 NameLabel.Parent = ProfileCard
 
 local SubNameLabel = Instance.new("TextLabel")
-SubNameLabel.Size = UDim2.new(1, -65, 0, 16)
-SubNameLabel.Position = UDim2.new(0, 62, 0, 32)
+SubNameLabel.Size = UDim2.new(1, -60, 0, 16)
+SubNameLabel.Position = UDim2.new(0, 58, 0, 30)
 SubNameLabel.BackgroundTransparency = 1
 SubNameLabel.Text = "✨ สถานะ: ออนไลน์"
 SubNameLabel.TextColor3 = Color3.fromRGB(120, 220, 120)
@@ -681,7 +719,7 @@ SubNameLabel.Parent = ProfileCard
 
 local function createExtraButton(posY, text, defaultColor)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.88, 0, 0, 28)
+    btn.Size = UDim2.new(0.88, 0, 0, 26)
     btn.Position = UDim2.new(0.06, 0, posY, 0)
     btn.BackgroundColor3 = defaultColor
     btn.Text = text
@@ -696,20 +734,19 @@ local function createExtraButton(posY, text, defaultColor)
     return btn
 end
 
-local AntiAFKButton = createExtraButton(0.12, "🛡️  Anti-AFK [ เปิดใช้งาน ]", Color3.fromRGB(40, 180, 90))
-local ToggleStatsButton = createExtraButton(0.19, "👁️  แสดงหน้าต่างสถิติ [ เปิดอยู่ ]", Color3.fromRGB(40, 150, 90))
-local ToggleKeyButton = createExtraButton(0.26, "⌨️  ปุ่มซ่อน/เปิด UI: [" .. tostring(uiToggleKey.Name) .. "]", Color3.fromRGB(70, 70, 100))
-local ThemeButton = createExtraButton(0.33, "🎨  ธีมสี UI: " .. currentThemeName, Color3.fromRGB(120, 60, 160))
-local FPSCapButton = createExtraButton(0.40, "🎯  ล็อก FPS: " .. targetFpsCap .. " [ ปิดอยู่ ]", Color3.fromRGB(70, 90, 180))
+local AntiAFKButton = createExtraButton(0.11, "🛡️  Anti-AFK [ เปิดใช้งาน ]", Color3.fromRGB(40, 180, 90))
+local ToggleStatsButton = createExtraButton(0.17, "👁️  แสดงหน้าต่างสถิติ [ เปิดอยู่ ]", Color3.fromRGB(40, 150, 90))
+local ToggleKeyButton = createExtraButton(0.23, "⌨️  ปุ่มซ่อน UI: [" .. tostring(uiToggleKey.Name) .. "]", Color3.fromRGB(70, 70, 100))
+local FPSCapButton = createExtraButton(0.29, "🎯  ล็อก FPS: " .. targetFpsCap .. " [ ปิดอยู่ ]", Color3.fromRGB(70, 90, 180))
 
 local FPSBox = Instance.new("TextBox")
-FPSBox.Size = UDim2.new(0.88, 0, 0, 26)
-FPSBox.Position = UDim2.new(0.06, 0, 0.48, 0)
+FPSBox.Size = UDim2.new(0.88, 0, 0, 24)
+FPSBox.Position = UDim2.new(0.06, 0, 0.35, 0)
 FPSBox.BackgroundColor3 = Color3.fromRGB(28, 28, 40)
 FPSBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 FPSBox.PlaceholderText = "ใส่ค่า FPS (เช่น 30, 60, 120)"
 FPSBox.Text = tostring(targetFpsCap)
-FPSBox.TextSize = 11
+FPSBox.TextSize = 10
 FPSBox.Font = Enum.Font.GothamMedium
 FPSBox.Parent = ExtraContainer
 
@@ -733,12 +770,42 @@ FPSBox.FocusLost:Connect(function()
     end
 end)
 
--- ฟังก์ชันในหมวดเพิ่มเติมส่วนล่าง
-local InfiniteYieldButton = createExtraButton(0.56, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
-local ServerHopButton = createExtraButton(0.63, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
-local RejoinButton = createExtraButton(0.70, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
-local SaveConfigButton = createExtraButton(0.77, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
-local FPSBoostButton = createExtraButton(0.84, "🚀  FPS Boost / ลดกราฟิก [ ปิดอยู่ ]", Color3.fromRGB(70, 90, 180))
+-- 🎨 ช่องปรับแต่งสี Theme (Custom Color Picker)
+local ColorPickerBox = Instance.new("TextBox")
+ColorPickerBox.Size = UDim2.new(0.88, 0, 0, 26)
+ColorPickerBox.Position = UDim2.new(0.06, 0, 0.42, 0)
+ColorPickerBox.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+ColorPickerBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+ColorPickerBox.PlaceholderText = "ใส่ค่าสี RGB เช่น 220,105,30"
+ColorPickerBox.Text = customAccentColor.R .. "," .. customAccentColor.G .. "," .. customAccentColor.B
+ColorPickerBox.TextSize = 10
+ColorPickerBox.Font = Enum.Font.GothamMedium
+ColorPickerBox.Parent = ExtraContainer
+
+local CPCorner = Instance.new("UICorner")
+CPCorner.CornerRadius = UDim.new(0, 8)
+CPCorner.Parent = ColorPickerBox
+
+ColorPickerBox.FocusLost:Connect(function()
+    local r, g, b = ColorPickerBox.Text:match("(%d+)%s*,%s*(%d+)%s*,%s*(%d+)")
+    r, g, b = tonumber(r), tonumber(g), tonumber(b)
+    if r and g and b and r <= 255 and g <= 255 and b <= 255 then
+        customAccentColor = {R = r, G = g, B = b}
+        activeAccentColor3 = Color3.fromRGB(r, g, b)
+        PlaceButton.BackgroundColor3 = activeAccentColor3
+        showNotification("เปลี่ยนสีธีม", "อัปเดตสีไฮไลต์สำเร็จ!", "success")
+    else
+        showNotification("ข้อผิดพลาด", "รูปแบบสีไม่ถูกต้อง (ใช้ R,G,B เช่น 220,105,30)", "error")
+        ColorPickerBox.Text = customAccentColor.R .. "," .. customAccentColor.G .. "," .. customAccentColor.B
+    end
+end)
+
+-- ฟังก์ชันปุ่มเสริมด้านล่าง
+local InfiniteYieldButton = createExtraButton(0.50, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
+local ServerHopButton = createExtraButton(0.56, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
+local RejoinButton = createExtraButton(0.62, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
+local SaveConfigButton = createExtraButton(0.68, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
+local FPSBoostButton = createExtraButton(0.74, "🚀  FPS Boost / ลดกราฟิก [ ปิดอยู่ ]", Color3.fromRGB(70, 90, 180))
 
 AntiAFKButton.MouseButton1Click:Connect(function()
     isAntiAFKEnabled = not isAntiAFKEnabled
@@ -774,25 +841,6 @@ ToggleKeyButton.MouseButton1Click:Connect(function()
     showNotification("เปลี่ยนปุ่มลัด", "กรุณากดปุ่มบนคีย์บอร์ดที่ต้องการตั้งเป็นปุ่มซ่อน/เปิด UI", "info")
 end)
 
-local themeNames = {"ส้มหมูปิ้ง", "เขียวมรกต", "ม่วงนีออน", "ฟ้าไซเบอร์"}
-ThemeButton.MouseButton1Click:Connect(function()
-    local currentIndex = 1
-    for i, name in ipairs(themeNames) do
-        if name == currentThemeName then currentIndex = i break end
-    end
-    currentIndex = currentIndex + 1
-    if currentIndex > #themeNames then currentIndex = 1 end
-    
-    currentThemeName = themeNames[currentIndex]
-    local t = Themes[currentThemeName]
-    MainFrame.BackgroundColor3 = t.Main
-    Header.BackgroundColor3 = t.Header
-    HeaderCover.BackgroundColor3 = t.Header
-    ThemeButton.Text = "🎨  ธีมสี UI: " .. currentThemeName
-    showNotification("เปลี่ยนธีมสี", "เปลี่ยนธีมหน้าต่างเป็น: " .. currentThemeName, "success")
-end)
-
--- แก้ไขระบบปิดล็อก FPS ให้กลับมาที่ค่ามาตรฐาน (60 FPS) แทนที่จะปลดเป็น 9999
 FPSCapButton.MouseButton1Click:Connect(function()
     isFPSCapEnabled = not isFPSCapEnabled
     if isFPSCapEnabled then
@@ -803,12 +851,11 @@ FPSCapButton.MouseButton1Click:Connect(function()
     else
         FPSCapButton.Text = "🎯  ล็อก FPS: " .. targetFpsCap .. " [ ปิดอยู่ ]"
         FPSCapButton.BackgroundColor3 = Color3.fromRGB(70, 90, 180)
-        pcall(function() setfpscap(60) end) -- ล็อกเซฟไว้ที่ 60 FPS ป้องกันคอมพิวเตอร์ร้อนและภาพกระชาก
+        pcall(function() setfpscap(60) end) -- ล็อกเซฟไว้ที่ 60 FPS ป้องกันคอมร้อน
         showNotification("ปลดล็อก FPS", "คืนค่าขีดจำกัด FPS กลับสู่ 60 FPS แล้ว", "info")
     end
 end)
 
--- 🚀 ฟังก์ชันรันสคริปต์ Infinite Yield
 InfiniteYieldButton.MouseButton1Click:Connect(function()
     showNotification("Infinite Yield", "กำลังโหลดและรัน Infinite Yield...", "success")
     pcall(function()
@@ -816,7 +863,6 @@ InfiniteYieldButton.MouseButton1Click:Connect(function()
     end)
 end)
 
--- 🌐 ระบบ Server Hop
 ServerHopButton.MouseButton1Click:Connect(function()
     showNotification("Server Hop", "กำลังค้นหาและย้ายไปเซิร์ฟเวอร์อื่น...", "info")
     task.spawn(function()
@@ -840,7 +886,6 @@ ServerHopButton.MouseButton1Click:Connect(function()
     end)
 end)
 
--- 🔄 ระบบ Rejoin
 RejoinButton.MouseButton1Click:Connect(function()
     showNotification("Rejoin", "กำลังเชื่อมต่อเข้าเซิร์ฟเวอร์เดิมใหม่...", "info")
     pcall(function()
@@ -861,7 +906,7 @@ SaveConfigButton.MouseButton1Click:Connect(function()
                 speed = customSpeed,
                 fpsCap = targetFpsCap,
                 speedState = isSpeedEnabled,
-                themeName = currentThemeName,
+                accentColor = customAccentColor,
                 toggleKey = tostring(uiToggleKey.Name),
                 checkpoints = {}
             }
@@ -871,7 +916,7 @@ SaveConfigButton.MouseButton1Click:Connect(function()
             
             local jsonString = HttpService:JSONEncode(saveData)
             writefile(CONFIG_FILE, jsonString)
-            showNotification("บันทึกสำเร็จ", "บันทึกจุดวาร์ป, ธีม และปุ่มลัดลงไฟล์เรียบร้อย!", "success")
+            showNotification("บันทึกสำเร็จ", "บันทึกจุดวาร์ป, สีธีม และปุ่มลัดลงไฟล์เรียบร้อย!", "success")
         else
             showNotification("ข้อผิดพลาด", "Executor ของคุณไม่รองรับคำสั่ง writefile", "error")
         end
@@ -1003,7 +1048,7 @@ PlaceButton.MouseButton1Click:Connect(function()
         end)
     else
         PlaceButton.Text = "🔥  เริ่มปิ้งหมู  [ ปิดอยู่ ]"
-        PlaceButton.BackgroundColor3 = COLOR_OFF_PLACE
+        PlaceButton.BackgroundColor3 = activeAccentColor3
         showNotification("ปิดใช้งาน", "หยุดระบบปิ้งหมูแล้ว", "error")
     end
 end)
@@ -1101,11 +1146,11 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if isBindingUIKey then
             if input.KeyCode ~= Enum.KeyCode.Escape then
                 uiToggleKey = input.KeyCode
-                ToggleKeyButton.Text = "⌨️  ปุ่มซ่อน/เปิด UI: [" .. tostring(uiToggleKey.Name) .. "]"
+                ToggleKeyButton.Text = "⌨️  ปุ่มซ่อน UI: [" .. tostring(uiToggleKey.Name) .. "]"
                 ToggleKeyButton.BackgroundColor3 = Color3.fromRGB(70, 70, 100)
                 showNotification("ตั้งค่าปุ่มลัด", "ตั้งค่าปุ่มเปิด/ปิด UI เป็น [" .. tostring(uiToggleKey.Name) .. "]", "success")
             else
-                ToggleKeyButton.Text = "⌨️  ปุ่มซ่อน/เปิด UI: [" .. tostring(uiToggleKey.Name) .. "]"
+                ToggleKeyButton.Text = "⌨️  ปุ่มซ่อน UI: [" .. tostring(uiToggleKey.Name) .. "]"
                 ToggleKeyButton.BackgroundColor3 = Color3.fromRGB(70, 70, 100)
             end
             isBindingUIKey = false
@@ -1147,4 +1192,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("โหลด UI FPS Safe Edition สำเร็จ!")
+print("โหลด UI Custom Edition สำเร็จ!")
