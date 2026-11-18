@@ -1,4 +1,4 @@
--- MooPing Hub | Clean Orange Edition
+-- MooPing Hub | Pink Theme Edition
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
@@ -33,7 +33,8 @@ local targetFpsCap = 60
 local savedSpeedState = false
 local uiToggleKey = Enum.KeyCode.LeftControl
 
-local THEME_COLOR = Color3.fromRGB(220, 105, 30) -- สีส้มหมูปิ้งสวยๆ
+-- ล็อกธีม UI เป็นสีชมพูสวยงาม
+local THEME_COLOR = Color3.fromRGB(200, 60, 140)
 
 local function cframeToTable(cf)
     local components = {cf:GetComponents()}
@@ -286,7 +287,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -20, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "🍖 MooPing Hub | Clean Edition"
+Title.Text = "🍖 MooPing Hub | Pink Edition"
 Title.TextColor3 = Color3.fromRGB(245, 245, 250)
 Title.TextSize = 14
 Title.Font = Enum.Font.GothamBold
@@ -346,13 +347,13 @@ PlayerContainer.BackgroundTransparency = 1
 PlayerContainer.Visible = false
 PlayerContainer.Parent = MainFrame
 
--- [ แท็บตั้งค่า ทำเป็น ScrollingFrame ขยาย CanvasSize เป็น 460 ให้เลื่อนพ้นปุ่ม END ]
+-- [ แท็บตั้งค่า ทำเป็น ScrollingFrame ขยาย CanvasSize เป็น 480 ให้เลื่อนพ้นปุ่ม END ]
 local SettingsContainer = Instance.new("ScrollingFrame")
 SettingsContainer.Size = UDim2.new(1, 0, 0.82, 0)
 SettingsContainer.Position = UDim2.new(0, 0, 0.17, 0)
 SettingsContainer.BackgroundTransparency = 1
 SettingsContainer.Visible = false
-SettingsContainer.CanvasSize = UDim2.new(0, 0, 0, 460)
+SettingsContainer.CanvasSize = UDim2.new(0, 0, 0, 480)
 SettingsContainer.ScrollBarThickness = 4
 SettingsContainer.Parent = MainFrame
 
@@ -415,7 +416,7 @@ BtnCorner1.Parent = PlaceButton
 local CollectButton = Instance.new("TextButton")
 CollectButton.Size = UDim2.new(0.88, 0, 0, 42)
 CollectButton.Position = UDim2.new(0.06, 0, 0.35, 0)
-CollectButton.BackgroundColor3 = THEME_COLOR -- ใช้สีส้มหมูปิ้งเช่นเดียวกับปุ่มเริ่มปิ้งตอนปิดอยู่
+CollectButton.BackgroundColor3 = THEME_COLOR -- ใช้สีชมพูเช่นเดียวกับปุ่มเริ่มปิ้งตอนปิดอยู่
 CollectButton.Text = "📦  เก็บหมูปิ้งอัตโนมัติ  [ ปิดอยู่ ]"
 CollectButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CollectButton.TextSize = 13
@@ -441,13 +442,17 @@ local STPCorner = Instance.new("UICorner")
 STPCorner.CornerRadius = UDim.new(0, 8)
 STPCorner.Parent = SaveTPButton
 
-local function createCheckpointRow(posY, index, defaultKeyName)
+local bindingIndex = nil
+local hotkeyButtons = {}
+local tpActionButtons = {}
+
+local function createCheckpointRow(posY, index)
     local hotkeyBtn = Instance.new("TextButton")
     hotkeyBtn.Size = UDim2.new(0.22, 0, 0, 36)
     hotkeyBtn.Position = UDim2.new(0.06, 0, posY, 0)
     hotkeyBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
     hotkeyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    hotkeyBtn.Text = defaultKeyName
+    hotkeyBtn.Text = tostring(checkpointHotkeys[index].Name)
     hotkeyBtn.TextSize = 11
     hotkeyBtn.Font = Enum.Font.GothamBold
     hotkeyBtn.Parent = TeleportContainer
@@ -483,15 +488,15 @@ local function createCheckpointRow(posY, index, defaultKeyName)
         showNotification("ตั้งค่าคีย์ลัด", "กรุณากดปุ่มบนคีย์บอร์ดสำหรับจุดที่ " .. index, "info")
     end)
 
+    hotkeyButtons[index] = hotkeyBtn
+    tpActionButtons[index] = btn
     return btn, hotkeyBtn
 end
 
-local bindingIndex = nil
-local TP1Button, HB1 = createCheckpointRow(0.18, 1, "Q")
-local TP2Button, HB2 = createCheckpointRow(0.34, 2, "Two")
-local TP3Button, HB3 = createCheckpointRow(0.50, 3, "Three")
-local TP4Button, HB4 = createCheckpointRow(0.66, 4, "Four")
-local hotkeyButtons = {HB1, HB2, HB3, HB4}
+local TP1Button, HB1 = createCheckpointRow(0.18, 1)
+local TP2Button, HB2 = createCheckpointRow(0.34, 2)
+local TP3Button, HB3 = createCheckpointRow(0.50, 3)
+local TP4Button, HB4 = createCheckpointRow(0.66, 4)
 
 local ClearTPButton = Instance.new("TextButton")
 ClearTPButton.Size = UDim2.new(0.88, 0, 0, 36)
@@ -507,19 +512,20 @@ local CTPCorner = Instance.new("UICorner")
 CTPCorner.CornerRadius = UDim.new(0, 8)
 CTPCorner.Parent = ClearTPButton
 
+local currentSaveIndex = 0
+
 SaveTPButton.MouseButton1Click:Connect(function()
     local char = LocalPlayer.Character
     local rootPart = char and char:FindFirstChild("HumanoidRootPart")
     if rootPart then
-        currentSaveIndex = (currentSaveIndex or 0) + 1
+        currentSaveIndex = currentSaveIndex + 1
         if currentSaveIndex > 4 then currentSaveIndex = 1 end
         
         savedCheckpoints[currentSaveIndex] = rootPart.CFrame
         
-        local buttons = {TP1Button, TP2Button, TP3Button, TP4Button}
-        buttons[currentSaveIndex].Text = "🚀 จุดที่ " .. currentSaveIndex .. " [บันทึกแล้ว ✓]"
-        buttons[currentSaveIndex].BackgroundColor3 = Color3.fromRGB(40, 150, 90)
-        buttons[currentSaveIndex].TextColor3 = Color3.fromRGB(255, 255, 255)
+        tpActionButtons[currentSaveIndex].Text = "🚀 จุดที่ " .. currentSaveIndex .. " [บันทึกแล้ว ✓]"
+        tpActionButtons[currentSaveIndex].BackgroundColor3 = Color3.fromRGB(40, 150, 90)
+        tpActionButtons[currentSaveIndex].TextColor3 = Color3.fromRGB(255, 255, 255)
         
         showNotification("บันทึกพอยต์สำเร็จ", "บันทึกพิกัดลงจุดที่ " .. currentSaveIndex .. " เรียบร้อย!", "success")
     end
@@ -528,8 +534,7 @@ end)
 ClearTPButton.MouseButton1Click:Connect(function()
     savedCheckpoints = {}
     currentSaveIndex = 0
-    local buttons = {TP1Button, TP2Button, TP3Button, TP4Button}
-    for i, btn in ipairs(buttons) do
+    for i, btn in ipairs(tpActionButtons) do
         btn.Text = "🚀 จุดที่ " .. i .. " [ยังไม่บันทึก]"
         btn.BackgroundColor3 = Color3.fromRGB(70, 70, 90)
         btn.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -726,14 +731,13 @@ end
 
 local AntiAFKButton = createSettingsButton(90, "🛡️  Anti-AFK [ เปิดใช้งาน ]", Color3.fromRGB(40, 180, 90))
 local ToggleStatsButton = createSettingsButton(134, "👁️  แสดงหน้าต่างสถิติ [ เปิดอยู่ ]", Color3.fromRGB(40, 150, 90))
-
-local InfiniteYieldButton = createSettingsButton(185, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
-local ServerHopButton = createSettingsButton(229, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
-local RejoinButton = createSettingsButton(273, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
-local SaveConfigButton = createSettingsButton(317, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
+local InfiniteYieldButton = createSettingsButton(178, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
+local ServerHopButton = createSettingsButton(222, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
+local RejoinButton = createSettingsButton(266, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
+local SaveConfigButton = createSettingsButton(310, "💾  บันทึกคอนฟิค (Manual Save)", Color3.fromRGB(40, 120, 200))
 
 -- 🛑 ปุ่ม Kill Switch / Clear Script (END)
-local ClearScriptButton = createSettingsButton(361, "🛑  เคลียร์และปิดสคริปต์ทั้งหมด (END)", Color3.fromRGB(220, 40, 40))
+local ClearScriptButton = createSettingsButton(354, "🛑  เคลียร์และปิดสคริปต์ทั้งหมด (END)", Color3.fromRGB(220, 40, 40))
 
 ClearScriptButton.MouseButton1Click:Connect(function()
     isPlacing = false
@@ -1081,4 +1085,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("โหลด UI Clean Edition สำเร็จ!")
+print("โหลด UI Pink Edition สำเร็จ!")
