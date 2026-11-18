@@ -20,7 +20,6 @@ end)
 
 local startTime = tick()
 
--- 💾 ระบบจัดการไฟล์คอนฟิค
 local CONFIG_FILE = "MooPingHub_Config.json"
 local savedCheckpoints = {}
 local checkpointHotkeys = {
@@ -33,21 +32,18 @@ local customSpeed = 30
 local targetFpsCap = 60
 local savedSpeedState = false
 local uiToggleKey = Enum.KeyCode.LeftControl
-local customAccentColor = {R = 220, G = 105, B = 30} -- สีส้มเริ่มต้น
+local customAccentColor = {R = 220, G = 105, B = 30}
 
--- ฟังก์ชันแปลง CFrame เป็น Table
 local function cframeToTable(cf)
     local components = {cf:GetComponents()}
     return components
 end
 
--- ฟังก์ชันแปลง Table กลับเป็น CFrame
 local function tableToCFrame(tbl)
     if not tbl or #tbl < 12 then return nil end
     return CFrame.new(unpack(tbl))
 end
 
--- โหลดข้อมูลไฟล์เก่า (ถ้ามี)
 if readfile and pcall(readfile, CONFIG_FILE) then
     pcall(function()
         local content = readfile(CONFIG_FILE)
@@ -74,7 +70,6 @@ end
 
 local activeAccentColor3 = Color3.fromRGB(customAccentColor.R, customAccentColor.G, customAccentColor.B)
 
--- ฟังก์ชันค้นหา Plot อัตโนมัติ
 local function getMyPlot()
     local stalls = Workspace:FindFirstChild("Stalls")
     if not stalls then return nil end
@@ -106,7 +101,6 @@ local function getMyPlot()
     return closestPlot or stalls:GetChildren()[1]
 end
 
--- เคลียร์ UI เก่าทิ้งก่อน
 pcall(function()
     for _, gui in ipairs(CoreGui:GetChildren()) do
         if gui.Name == "MooPingSafeHub" then gui:Destroy() end
@@ -129,7 +123,6 @@ else
     ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- 🔔 ระบบแจ้งเตือน
 local NotifContainer = Instance.new("Frame")
 NotifContainer.Size = UDim2.new(0, 260, 0, 300)
 NotifContainer.Position = UDim2.new(1, -270, 0, 20)
@@ -205,7 +198,6 @@ local function showNotification(title, message, notifType)
     end)
 end
 
--- 🌟 หน้าต่างสถิติลอยได้
 local FloatingStats = Instance.new("Frame")
 FloatingStats.Name = "FloatingStats"
 FloatingStats.Size = UDim2.new(0, 225, 0, 130)
@@ -256,7 +248,6 @@ local FloatPlayersKey = createFloatStatRow(66, "👥 ผู้เล่น: ก�
 local FloatRealTimeKey = createFloatStatRow(84, "🕒 เวลาจริง: 00:00:00")
 local FloatRunTimeKey = createFloatStatRow(102, "⏱️ รันมาแล้ว: 00:00:00")
 
--- 🌟 หน้าต่างหลัก (Main Frame)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 340, 0, 600)
@@ -356,7 +347,6 @@ ExtraContainer.BackgroundTransparency = 1
 ExtraContainer.Visible = false
 ExtraContainer.Parent = MainFrame
 
--- ==================== หมวดหมู่ที่ 1: ทั่วไป (General) ====================
 local StatusBadge = Instance.new("Frame")
 StatusBadge.Size = UDim2.new(0.88, 0, 0, 26)
 StatusBadge.Position = UDim2.new(0.06, 0, 0.01, 0)
@@ -531,7 +521,6 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- ==================== หมวดหมู่ที่ 2: วาร์ป (Teleport) ====================
 local bindingIndex = nil
 
 local SaveTPButton = Instance.new("TextButton")
@@ -664,13 +653,11 @@ TP2Button.MouseButton1Click:Connect(function() teleportTo(2) end)
 TP3Button.MouseButton1Click:Connect(function() teleportTo(3) end)
 TP4Button.MouseButton1Click:Connect(function() teleportTo(4) end)
 
--- ==================== หมวดหมู่ที่ 3: เพิ่มเติม (Extra & Tools) ====================
 local isAntiAFKEnabled = true
 local isFloatingStatsVisible = true
 local isFPSCapEnabled = false
 local isBindingUIKey = false
 
--- 👤 การ์ดโปรไฟล์
 local ProfileCard = Instance.new("Frame")
 ProfileCard.Size = UDim2.new(0.88, 0, 0, 60)
 ProfileCard.Position = UDim2.new(0.06, 0, 0.01, 0)
@@ -701,7 +688,7 @@ NameLabel.Position = UDim2.new(0, 58, 0, 11)
 NameLabel.BackgroundTransparency = 1
 NameLabel.Text = LocalPlayer.Name
 NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-NameLabel.TextSize: 11
+NameLabel.TextSize = 11
 NameLabel.Font = Enum.Font.GothamBold
 NameLabel.TextXAlignment = Enum.TextXAlignment.Left
 NameLabel.Parent = ProfileCard
@@ -770,7 +757,6 @@ FPSBox.FocusLost:Connect(function()
     end
 end)
 
--- 🎨 ช่องปรับแต่งสี Theme (Custom Color Picker)
 local ColorPickerBox = Instance.new("TextBox")
 ColorPickerBox.Size = UDim2.new(0.88, 0, 0, 26)
 ColorPickerBox.Position = UDim2.new(0.06, 0, 0.42, 0)
@@ -800,7 +786,6 @@ ColorPickerBox.FocusLost:Connect(function()
     end
 end)
 
--- ฟังก์ชันปุ่มเสริมด้านล่าง
 local InfiniteYieldButton = createExtraButton(0.50, "🚀  รันสคริปต์ Infinite Yield", Color3.fromRGB(200, 80, 50))
 local ServerHopButton = createExtraButton(0.56, "🌐  เปลี่ยนเซิร์ฟเวอร์ (Server Hop)", Color3.fromRGB(180, 120, 30))
 local RejoinButton = createExtraButton(0.62, "🔄  เข้าเซิร์ฟเดิมใหม่ (Rejoin)", Color3.fromRGB(140, 50, 160))
@@ -851,7 +836,7 @@ FPSCapButton.MouseButton1Click:Connect(function()
     else
         FPSCapButton.Text = "🎯  ล็อก FPS: " .. targetFpsCap .. " [ ปิดอยู่ ]"
         FPSCapButton.BackgroundColor3 = Color3.fromRGB(70, 90, 180)
-        pcall(function() setfpscap(60) end) -- ล็อกเซฟไว้ที่ 60 FPS ป้องกันคอมร้อน
+        pcall(function() setfpscap(60) end)
         showNotification("ปลดล็อก FPS", "คืนค่าขีดจำกัด FPS กลับสู่ 60 FPS แล้ว", "info")
     end
 end)
